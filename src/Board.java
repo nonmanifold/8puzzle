@@ -1,5 +1,9 @@
+import edu.princeton.cs.algs4.Stack;
+
 public class Board {
     private final int dimension;
+    private int blankR;
+    private int blankC;
     private int[][] blocks;
 
     // construct a board from an n-by-n array of blocks
@@ -13,7 +17,13 @@ public class Board {
         // copy blocks to internal state
         for (int i = 0; i < dimension; i++) {
             this.blocks[i] = new int[dimension];
-            System.arraycopy(blocks[i], 0, this.blocks[i], 0, dimension);
+            for (int j = 0; j < dimension; j++) {
+                this.blocks[i][j] = blocks[i][j];
+                if (blocks[i][j] == 0) {
+                    blankR = i;
+                    blankC = j;
+                }
+            }
         }
     }
 
@@ -81,13 +91,34 @@ public class Board {
             }
             sb.append("\n");
         }
-
-
         return sb.toString();
     }
 
     // all neighboring boards
     public Iterable<Board> neighbors() {
-        return null;
+        Stack<Board> neighbors = new Stack<Board>();
+        addNeighborIfPossible(neighbors, 1, 0);
+        addNeighborIfPossible(neighbors, -1, 0);
+        addNeighborIfPossible(neighbors, 0, 1);
+        addNeighborIfPossible(neighbors, 0, -1);
+        return neighbors;
+    }
+
+    private void addNeighborIfPossible(Stack<Board> neighbors, int dr, int dc) {
+        int blankTargetR = blankR + dr;
+        int blankTargetC = blankC + dc;
+
+        if (blankTargetR >= 0 && blankTargetR < dimension && blankTargetC >= 0 && blankTargetC < dimension) {
+            Board copy = new Board(blocks);
+            copy.swapBlankTo(blankTargetR, blankTargetC);
+            neighbors.push(copy);
+        }
+    }
+
+    private void swapBlankTo(int blankTargetR, int blankTargetC) {
+        blocks[blankR][blankC] = blocks[blankTargetR][blankTargetC];
+        blocks[blankTargetR][blankTargetC] = 0;
+        blankR = blankTargetR;
+        blankC = blankTargetC;
     }
 }

@@ -84,4 +84,29 @@ public class BoardTest {
         assertTrue(boardA1.equals(boardA));
         assertFalse(boardA.equals(boardB));
     }
+
+
+    @Test
+    public void neighborsTest() {
+        Board board = new Board(new int[][]{
+                {1, 2},
+                {3, 0}
+        });
+        Iterable<Board> neighbors = board.neighbors();
+        Board[] n = new Board[2];
+        int i = 0;
+        for (Board neighbor : neighbors) {
+            n[i++] = neighbor;
+        }
+        assertArrayEquals(new Board[]{
+                new Board(new int[][]{
+                        {1, 2},
+                        {0, 3}
+                }),
+                new Board(new int[][]{
+                        {1, 0},
+                        {3, 2}
+                })
+        }, n);
+    }
 }
