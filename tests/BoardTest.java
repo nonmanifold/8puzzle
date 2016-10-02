@@ -60,10 +60,10 @@ public class BoardTest {
                 {4, 8, 2, 1}
         });
         assertEquals("4\n" +
-                " 0 12  9 13\n" +
-                "15 11 10 14\n" +
-                " 3  7  5  6\n" +
-                " 4  8  2  1\n", board4.toString());
+                " 0 12  9 13 \n" +
+                "15 11 10 14 \n" +
+                " 3  7  5  6 \n" +
+                " 4  8  2  1 \n", board4.toString());
     }
 
     @Test
