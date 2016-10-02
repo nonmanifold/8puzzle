@@ -3,6 +3,7 @@ import edu.princeton.cs.algs4.Stack;
 public class Board {
     private final int dimension;
     private int outOfPlace;
+    private int manhattan;
     private int blankR;
     private int blankC;
     private int[][] blocks;
@@ -28,12 +29,25 @@ public class Board {
                 this.blocks[i][j] = blocks[i][j];
                 if (isBlockMisplaced(i, j)) {
                     outOfPlace++;
+                    int manhattanDistance = computeManhattanDistance(i, j);
+                    manhattan += manhattanDistance;
                 }
                 if (blocks[i][j] == 0) {
                     blankR = i;
                     blankC = j;
                 }
             }
+        }
+    }
+
+    private int computeManhattanDistance(int row, int col) {
+        if (isBlank(row, col)) {
+            return dimension - 1 - row + dimension - 1 - col;
+        } else {
+            int block = blocks[row][col] - 1;
+            int deltaRow = row - block / dimension;
+            int deltaCol = col - (block - dimension * (block / dimension));
+            return Math.abs(deltaRow) + Math.abs(deltaCol);
         }
     }
 
@@ -49,7 +63,7 @@ public class Board {
 
     // sum of Manhattan distances between blocks and goal
     public int manhattan() {
-        return 0;
+        return manhattan;
     }
 
     // is this board the goal board?
@@ -79,11 +93,14 @@ public class Board {
     private void swapFromTo(int row, int col, int targetRow, int targetCol) {
         // here we also update outOfPlace counter
         int numOutOfPlaceBeforeSwap = 0;
+        int manhattanSumBefore = 0;
         if (isBlockMisplaced(targetRow, targetCol)) {
             numOutOfPlaceBeforeSwap++;
+            manhattanSumBefore += computeManhattanDistance(targetRow, targetCol);
         }
         if (isBlockMisplaced(row, col)) {
             numOutOfPlaceBeforeSwap++;
+            manhattanSumBefore += computeManhattanDistance(row, col);
         }
 
         int old = blocks[targetRow][targetCol];
@@ -92,14 +109,20 @@ public class Board {
         blocks[row][col] = old;
 
         int numOutOfPlaceAfterSwap = 0;
+        int manhattanSumAfter = 0;
         if (isBlockMisplaced(targetRow, targetCol)) {
             numOutOfPlaceAfterSwap++;
+            manhattanSumAfter += computeManhattanDistance(targetRow, targetCol);
         }
         if (isBlockMisplaced(row, col)) {
             numOutOfPlaceAfterSwap++;
+            manhattanSumAfter += computeManhattanDistance(row, col);
         }
-        int delta = numOutOfPlaceAfterSwap - numOutOfPlaceBeforeSwap;
-        outOfPlace += delta;
+        int outOfPlaceDelta = numOutOfPlaceAfterSwap - numOutOfPlaceBeforeSwap;
+        outOfPlace += outOfPlaceDelta;
+
+        int manhattanDelta = manhattanSumAfter - manhattanSumBefore;
+        manhattan += manhattanDelta;
     }
 
     private boolean isBlockMisplaced(int row, int col) {

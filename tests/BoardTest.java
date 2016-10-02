@@ -29,6 +29,25 @@ public class BoardTest {
 
     @Test
     public void manhattan() {
+        assertEquals(0, (new Board(new int[][]{
+                {0}
+        })).manhattan());
+
+        assertEquals(0, (new Board(new int[][]{
+                {1, 2},
+                {3, 0}
+        })).manhattan());
+
+        assertEquals(2, (new Board(new int[][]{
+                {2, 1},
+                {3, 0}
+        })).manhattan());
+
+        assertEquals(1, (new Board(new int[][]{
+                {1, 0},
+                {3, 2}
+        })).manhattan());
+
         int[][] blocks = new int[][]{
                 {8, 1, 3},
                 {4, 0, 2},
