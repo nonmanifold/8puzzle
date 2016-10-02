@@ -7,10 +7,10 @@ public class Board {
     private int blankC;
     private int[][] blocks;
     private static int[][] directions = new int[][]{
+            {0, 1},
             {1, 0},
             {-1, 0},
-            {0, 1},
-            {0, -1}
+            {0, -1},
     };
 
     // construct a board from an n-by-n array of blocks

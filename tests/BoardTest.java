@@ -203,8 +203,8 @@ public class BoardTest {
         });
 
         Board boardTwin = new Board(new int[][]{
-                {0, 2, 3},
-                {4, 1, 5},
+                {0, 3, 1},
+                {4, 2, 5},
                 {7, 8, 6}
         });
 
@@ -219,8 +219,8 @@ public class BoardTest {
         });
 
         Board boardTwin = new Board(new int[][]{
-                {3, 2},
-                {1, 0}
+                {2, 1},
+                {3, 0}
         });
 
         assertEquals(boardTwin, board.twin());
@@ -235,8 +235,8 @@ public class BoardTest {
         });
 
         Board boardTwin = new Board(new int[][]{
-                {4, 2, 3},
-                {1, 5, 6},
+                {2, 1, 3},
+                {4, 5, 6},
                 {7, 8, 0}
         });
 
@@ -252,8 +252,8 @@ public class BoardTest {
         });
 
         Board boardTwin = new Board(new int[][]{
-                {0, 5, 3},
-                {4, 2, 6},
+                {0, 3, 2},
+                {4, 5, 6},
                 {7, 8, 1}
         });
 
