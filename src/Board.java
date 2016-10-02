@@ -109,7 +109,7 @@ public class Board {
                 1,
                 dimension,
                 -dimension,
-                -1,
+                -1
         };
     }
 
@@ -165,8 +165,9 @@ public class Board {
         int target = src + d;
         if ((d == -1 || d == 1) && row(src) != row(target)) {
             return false;
+        } else {
+            return target >= 0 && target < blocks.length;
         }
-        return target >= 0 && target < blocks.length;
     }
 
     // does this board equal y?
@@ -203,8 +204,8 @@ public class Board {
         sb.append(dimension());
         sb.append("\n");
         int offset = 0;
-        for (int i = 0; i < dimension(); i++) {
-            for (int j = 0; j < dimension(); j++) {
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
                 sb.append(String.format("%2d ", blocks[offset]));
                 offset++;
             }
