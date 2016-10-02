@@ -68,7 +68,7 @@ public class Board {
 
     // is this board the goal board?
     public boolean isGoal() {
-        return outOfPlace == 0;
+        return manhattan == 0;
     }
 
     // a board that is obtained by exchanging any pair of blocks

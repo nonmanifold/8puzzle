@@ -18,12 +18,13 @@ public class Solver {
     }
 
     private Node compute(Board initial) {
-        MinPQ<Node> queueMain = new MinPQ<Node>();
+        MinPQ<Node> queueMain = new MinPQ<>();
         queueMain.insert(new Node(initial, -1, null));
-        MinPQ<Node> queueTwin = new MinPQ<Node>();
+
+        MinPQ<Node> queueTwin = new MinPQ<>();
         queueTwin.insert(new Node(initial.twin(), -1, null));
 
-        boolean isMain = false;
+        boolean isMain = true;
         while (true) {
             isMain = !isMain;
             if (isMain) {
@@ -37,15 +38,13 @@ public class Solver {
                     }
                 }
             } else {
-                Node current = queueTwin.delMin();
-                if (current.board.isGoal()) {
-                    return null;
-                } else if (current.previous == null) {
+                Node currentTwin = queueTwin.delMin();
+                if (currentTwin.board.isGoal()) {
                     return null;
                 }
-                for (Board neighbor : current.board.neighbors()) {
-                    if (!neighbor.equals(current.board)) {
-                        queueTwin.insert(new Node(neighbor, current.moves, current.board));
+                for (Board neighbor : currentTwin.board.neighbors()) {
+                    if (!neighbor.equals(currentTwin.board)) {
+                        queueTwin.insert(new Node(neighbor, currentTwin.moves, currentTwin.board));
                     }
                 }
             }
@@ -106,7 +105,11 @@ public class Solver {
 
         @Override
         public int compareTo(Node o) {
-            return priority - o.priority;
+            if (priority == o.priority) {
+                return board.manhattan() - o.board.manhattan();
+            } else {
+                return priority - o.priority;
+            }
         }
     }
 }

@@ -37,9 +37,10 @@ public class SolverTest {
     @Test
     public void UnSolvable3x3() {
         int[][] blocks = new int[][]{
-                {1, 2, 3},
-                {4, 5, 6},
-                {8, 7, 0}
+                {8, 6, 7},
+                {2, 5, 4},
+                {1, 3, 0}
+
         };
         Board initial = new Board(blocks);
         Solver solver = new Solver(initial);
@@ -49,10 +50,10 @@ public class SolverTest {
     @Test
     public void UnSolvable4x4() {
         int[][] blocks = new int[][]{
-                {1, 2, 3, 4},
-                {5, 6, 7, 8},
-                {9, 10, 11, 12},
-                {13, 15, 14, 0}
+                {3, 2, 4, 8},
+                {1, 6, 0, 12},
+                {5, 10, 7, 11},
+                {9, 13, 14, 15}
         };
         Board initial = new Board(blocks);
         Solver solver = new Solver(initial);
