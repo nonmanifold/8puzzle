@@ -4,7 +4,6 @@ public class Board {
     public Board(int[][] blocks) {
     }
 
-
     // board dimension n
     public int dimension() {
         return 0;
