@@ -2,7 +2,10 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.StdOut;
 
+import java.util.Arrays;
+
 public class Solver {
+    private final Node goalNode;
     private int moves = -1;
 
     // find a solution to the initial board (using the A* algorithm)
@@ -10,7 +13,7 @@ public class Solver {
         if (initial == null) {
             throw new NullPointerException();
         }
-        Node goalNode = compute(initial);
+        goalNode = compute(initial);
 
         if (goalNode != null) {
             moves = goalNode.moves;
@@ -34,7 +37,7 @@ public class Solver {
                 }
                 for (Board neighbor : current.board.neighbors()) {
                     if (!neighbor.equals(current.board)) {
-                        queueMain.insert(new Node(neighbor, current.moves, current.board));
+                        queueMain.insert(new Node(neighbor, current.moves, current));
                     }
                 }
             } else {
@@ -44,7 +47,7 @@ public class Solver {
                 }
                 for (Board neighbor : currentTwin.board.neighbors()) {
                     if (!neighbor.equals(currentTwin.board)) {
-                        queueTwin.insert(new Node(neighbor, currentTwin.moves, currentTwin.board));
+                        queueTwin.insert(new Node(neighbor, currentTwin.moves, currentTwin));
                     }
                 }
             }
@@ -63,7 +66,16 @@ public class Solver {
 
     // sequence of boards in a shortest solution; null if unsolvable
     public Iterable<Board> solution() {
-        return null;
+        Board[] boards = new Board[moves()];
+        Node curr = goalNode;
+        int i = moves - 1;
+        while (curr.previous != null) {
+            boards[i] = curr.board;
+            i--;
+            curr = curr.previous;
+        }
+
+        return Arrays.asList(boards);
     }
 
     // solve a slider puzzle
@@ -94,9 +106,9 @@ public class Solver {
         private final Board board;
         private final int moves;
         private final int priority;
-        private final Board previous;
+        private final Node previous;
 
-        Node(Board board, int moves, Board previous) {
+        Node(Board board, int moves, Node previous) {
             this.previous = previous;
             this.board = board;
             this.moves = moves + 1;

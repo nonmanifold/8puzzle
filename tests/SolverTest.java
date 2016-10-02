@@ -34,6 +34,26 @@ public class SolverTest {
         assertEquals("Minimum number of moves = 4", 4, solver.moves());
     }
 
+
+    @Test
+    public void solutionTest() {
+        Solver solver = new Solver(new Board(new int[][]{
+                {0, 1, 3},
+                {4, 2, 5},
+                {7, 8, 6}
+        }));
+        assertTrue("Be solvable", solver.isSolvable());
+        assertEquals("Minimum number of moves = 4", 4, solver.moves());
+        int boards = 0;
+        Board last = null;
+        for (Board b : solver.solution()) {
+            boards++;
+            last = b;
+        }
+        assertEquals(4, boards);
+        assertTrue(last.isGoal());
+    }
+
     @Test
     public void UnSolvable3x3() {
         int[][] blocks = new int[][]{
