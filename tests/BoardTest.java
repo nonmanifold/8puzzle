@@ -109,4 +109,28 @@ public class BoardTest {
                 })
         }, n);
     }
+
+    @Test
+    public void isGoalTest() {
+        Board emptyBoard = new Board(new int[][]{
+        });
+        assertTrue(emptyBoard.isGoal());
+
+        Board oneElementBoard = new Board(new int[][]{
+                {0}
+        });
+        assertTrue(oneElementBoard.isGoal());
+
+        Board goalBoard = new Board(new int[][]{
+                {1, 2},
+                {3, 0}
+        });
+        assertTrue(goalBoard.isGoal());
+
+        Board nonGoalBoard = new Board(new int[][]{
+                {1, 2},
+                {0, 3}
+        });
+        assertFalse(nonGoalBoard.isGoal());
+    }
 }

@@ -2,6 +2,7 @@ import edu.princeton.cs.algs4.Stack;
 
 public class Board {
     private final int dimension;
+    private int outOfPlace;
     private int blankR;
     private int blankC;
     private int[][] blocks;
@@ -19,6 +20,9 @@ public class Board {
             this.blocks[i] = new int[dimension];
             for (int j = 0; j < dimension; j++) {
                 this.blocks[i][j] = blocks[i][j];
+                if (blocks[i][j] != 1 + i * dimension + j && !(i == dimension - 1 && j == dimension - 1)) {
+                    outOfPlace++;
+                }
                 if (blocks[i][j] == 0) {
                     blankR = i;
                     blankC = j;
@@ -32,10 +36,9 @@ public class Board {
         return dimension;
     }
 
-
     // number of blocks out of place
     public int hamming() {
-        return 0;
+        return outOfPlace;
     }
 
     // sum of Manhattan distances between blocks and goal
@@ -45,7 +48,7 @@ public class Board {
 
     // is this board the goal board?
     public boolean isGoal() {
-        return false;
+        return outOfPlace == 0;
     }
 
     // a board that is obtained by exchanging any pair of blocks
