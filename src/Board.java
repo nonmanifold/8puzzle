@@ -42,7 +42,7 @@ public class Board {
 
     private int computeManhattanDistance(int row, int col) {
         if (isBlank(row, col)) {
-            return dimension - 1 - row + dimension - 1 - col;
+            return 0;
         } else {
             int block = blocks[row][col] - 1;
             int deltaRow = row - block / dimension;
@@ -79,7 +79,7 @@ public class Board {
                 for (int[] d : directions) {
                     int targetR = i + d[0];
                     int targetC = j + d[1];
-                    if (rangeCheck(targetR, targetC) && !isBlank(i, j) && !isBlank(targetR, targetC)) {
+                    if (insideRange(targetR, targetC) && !isBlank(i, j) && !isBlank(targetR, targetC)) {
                         copy.swapFromTo(i, j, targetR, targetC);
                         return copy;
                     }
@@ -126,14 +126,19 @@ public class Board {
     }
 
     private boolean isBlockMisplaced(int row, int col) {
-        return blocks[row][col] != 1 + row * dimension + col && !(row == dimension - 1 && col == dimension - 1);
+        int block = blocks[row][col];
+        if (block == 0) {
+            return false;
+        }else {
+            return block != 1 + row * dimension + col;
+        }
     }
 
     private boolean isBlank(int row, int col) {
         return blocks[row][col] == 0;
     }
 
-    private boolean rangeCheck(int targetR, int targetC) {
+    private boolean insideRange(int targetR, int targetC) {
         return targetR >= 0 && targetR < dimension && targetC >= 0 && targetC < dimension;
     }
 
@@ -191,7 +196,7 @@ public class Board {
         int blankTargetR = blankR + dr;
         int blankTargetC = blankC + dc;
 
-        if (rangeCheck(blankTargetR, blankTargetC)) {
+        if (insideRange(blankTargetR, blankTargetC)) {
             Board copy = new Board(blocks);
             copy.swapBlankTo(blankTargetR, blankTargetC);
             neighbors.push(copy);

@@ -28,7 +28,20 @@ public class BoardTest {
     }
 
     @Test
+    public void hammingUpdate() {
+
+        Board board = new Board(new int[][]{
+                {4, 1, 3},
+                {8, 0, 2},
+                {7, 6, 5}
+        });
+
+        assertEquals(5, board.twin().hamming());
+    }
+
+    @Test
     public void manhattan() {
+
         assertEquals(0, (new Board(new int[][]{
                 {0}
         })).manhattan());
@@ -56,6 +69,34 @@ public class BoardTest {
         Board board = new Board(blocks);
 
         assertEquals(10, board.manhattan());
+
+        assertEquals(4, (new Board(new int[][]{
+                {0, 1, 3},
+                {4, 2, 5},
+                {7, 8, 6}
+        })).manhattan());
+
+        assertEquals(3, (new Board(new int[][]{
+                {1, 0, 3},
+                {4, 2, 5},
+                {7, 8, 6}
+        })).manhattan());
+        assertEquals(5, (new Board(new int[][]{
+                {4, 1, 3},
+                {0, 2, 5},
+                {7, 8, 6}
+        })).manhattan());
+    }
+
+    @Test
+    public void manhattanUpdate() {
+        Board board = new Board(new int[][]{
+                {4, 1, 3},
+                {8, 0, 2},
+                {7, 6, 5}
+        });
+
+        assertEquals(10, board.twin().manhattan());
     }
 
     @Test
@@ -153,9 +194,25 @@ public class BoardTest {
         assertFalse(nonGoalBoard.isGoal());
     }
 
+    @Test
+    public void twinTest3() {
+        Board board = new Board(new int[][]{
+                {0, 1, 3},
+                {4, 2, 5},
+                {7, 8, 6}
+        });
+
+        Board boardTwin = new Board(new int[][]{
+                {0, 2, 3},
+                {4, 1, 5},
+                {7, 8, 6}
+        });
+
+        assertEquals(boardTwin, board.twin());
+    }
 
     @Test
-    public void twinTest() {
+    public void twinTest2x() {
         Board board = new Board(new int[][]{
                 {1, 2},
                 {3, 0}
@@ -164,6 +221,40 @@ public class BoardTest {
         Board boardTwin = new Board(new int[][]{
                 {3, 2},
                 {1, 0}
+        });
+
+        assertEquals(boardTwin, board.twin());
+    }
+
+    @Test
+    public void twinTest3x() {
+        Board board = new Board(new int[][]{
+                {1, 2, 3},
+                {4, 5, 6},
+                {7, 8, 0}
+        });
+
+        Board boardTwin = new Board(new int[][]{
+                {4, 2, 3},
+                {1, 5, 6},
+                {7, 8, 0}
+        });
+
+        assertEquals(boardTwin, board.twin());
+    }
+
+    @Test
+    public void twinTestBlank() {
+        Board board = new Board(new int[][]{
+                {0, 2, 3},
+                {4, 5, 6},
+                {7, 8, 1}
+        });
+
+        Board boardTwin = new Board(new int[][]{
+                {0, 5, 3},
+                {4, 2, 6},
+                {7, 8, 1}
         });
 
         assertEquals(boardTwin, board.twin());
