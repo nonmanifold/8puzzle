@@ -21,9 +21,10 @@ public class Board {
         }
         this.blocks = new int[blocks.length][];
         // copy blocks to internal state
-        for (int i = 0; i < dimension(); i++) {
-            this.blocks[i] = new int[dimension()];
-            for (int j = 0; j < dimension(); j++) {
+        int dimension = dimension();
+        for (int i = 0; i < dimension; i++) {
+            this.blocks[i] = new int[dimension];
+            for (int j = 0; j < dimension; j++) {
                 this.blocks[i][j] = blocks[i][j];
                 if (isBlockMisplaced(i, j)) {
                     outOfPlace++;
@@ -39,14 +40,16 @@ public class Board {
     }
 
     private int computeManhattanDistance(int row, int col) {
-        if (isBlank(row, col)) {
-            return 0;
-        } else {
-            int block = blocks[row][col] - 1;
-            int deltaRow = row - block / dimension();
-            int deltaCol = col - (block - dimension() * (block / dimension()));
-            return Math.abs(deltaRow) + Math.abs(deltaCol);
-        }
+//        if (isBlank(row, col)) {
+//            return 0;
+//        } else {
+        int block = blocks[row][col] - 1;
+        int dimension = dimension();
+        int blockDimension = block / dimension;
+        int deltaRow = row - blockDimension;
+        int deltaCol = col - (block - dimension * blockDimension);
+        return Math.abs(deltaRow) + Math.abs(deltaCol);
+//        }
     }
 
     // board dimension n
@@ -72,8 +75,9 @@ public class Board {
     // a board that is obtained by exchanging any pair of blocks
     public Board twin() {
         Board copy = new Board(blocks);
-        for (int i = 0; i < dimension(); i++) {
-            for (int j = 0; j < dimension(); j++) {
+        int dimension = dimension();
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
                 for (int[] d : directions) {
                     int targetR = i + d[0];
                     int targetC = j + d[1];
