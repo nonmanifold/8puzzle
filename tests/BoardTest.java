@@ -171,6 +171,30 @@ public class BoardTest {
     }
 
     @Test
+    public void neighborsTestUnsolved() {
+        Board board = new Board(new int[][]{
+                {1, 2},
+                {0, 3}
+        });
+        Iterable<Board> neighbors = board.neighbors();
+        Board[] n = new Board[2];
+        int i = 0;
+        for (Board neighbor : neighbors) {
+            n[i++] = neighbor;
+        }
+        assertArrayEquals(new Board[]{
+                new Board(new int[][]{
+                        {0, 2},
+                        {1, 3}
+                }),
+                new Board(new int[][]{
+                        {1, 2},
+                        {3, 0}
+                })
+        }, n);
+    }
+
+    @Test
     public void isGoalTest() {
         Board emptyBoard = new Board(new int[][]{
         });

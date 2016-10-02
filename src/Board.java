@@ -1,17 +1,13 @@
 import edu.princeton.cs.algs4.Stack;
 
+import java.util.Arrays;
+
 public class Board {
+    private int dimension = 0;
     private int outOfPlace;
     private int manhattan;
-    private int blankR;
-    private int blankC;
-    private int[][] blocks;
-    private static int[][] directions = new int[][]{
-            {0, 1},
-            {1, 0},
-            {-1, 0},
-            {0, -1},
-    };
+    private int blank;
+    private int[] blocks;
 
     // construct a board from an n-by-n array of blocks
     // (where blocks[i][j] = block in row i, column j)
@@ -19,42 +15,58 @@ public class Board {
         if (blocks == null) {
             throw new NullPointerException();
         }
-        this.blocks = new int[blocks.length][];
+        dimension = blocks.length;
+        this.blocks = new int[dimension * dimension];
         // copy blocks to internal state
-        int dimension = dimension();
+        int offset = 0;
         for (int i = 0; i < dimension; i++) {
-            this.blocks[i] = new int[dimension];
             for (int j = 0; j < dimension; j++) {
-                this.blocks[i][j] = blocks[i][j];
-                if (isBlockMisplaced(i, j)) {
+                this.blocks[offset] = blocks[i][j];
+                if (isBlockMisplaced(offset)) {
                     outOfPlace++;
-                    int manhattanDistance = computeManhattanDistance(i, j);
+                    int manhattanDistance = computeManhattanDistance(offset);
                     manhattan += manhattanDistance;
                 }
                 if (blocks[i][j] == 0) {
-                    blankR = i;
-                    blankC = j;
+                    blank = offset;
                 }
+                offset++;
             }
+
         }
     }
 
-    private int computeManhattanDistance(int row, int col) {
-//        if (isBlank(row, col)) {
-//            return 0;
-//        } else {
-        int block = blocks[row][col] - 1;
-        int dimension = dimension();
-        int blockDimension = block / dimension;
-        int deltaRow = row - blockDimension;
-        int deltaCol = col - (block - dimension * blockDimension);
+    private Board(int[] blocks, int dimension, int manhattan, int hamming, int blank) {
+        this.blocks = Arrays.copyOf(blocks, blocks.length);
+        this.dimension = dimension;
+        outOfPlace = hamming;
+        this.manhattan = manhattan;
+        this.blank = blank;
+    }
+
+    private int to1d(int row, int col) {
+        return row * dimension + col;
+    }
+
+    private int row(int offset) {
+        return offset / dimension;
+    }
+
+    private int col(int offset) {
+        return offset - row(offset) * dimension;
+    }
+
+    private int computeManhattanDistance(int offset) {
+        int desiredIdx = blocks[offset] - 1;
+
+        int deltaRow = row(offset) - row(desiredIdx);
+        int deltaCol = col(offset) - col(desiredIdx);
         return Math.abs(deltaRow) + Math.abs(deltaCol);
-//        }
     }
 
     // board dimension n
     public int dimension() {
-        return blocks.length;
+        return dimension;
     }
 
     // number of blocks out of place
@@ -74,51 +86,60 @@ public class Board {
 
     // a board that is obtained by exchanging any pair of blocks
     public Board twin() {
-        Board copy = new Board(blocks);
-        int dimension = dimension();
+        Board copy = new Board(blocks, dimension, manhattan(), hamming(), blank);
+        int source = 0;
         for (int i = 0; i < dimension; i++) {
             for (int j = 0; j < dimension; j++) {
-                for (int[] d : directions) {
-                    int targetR = i + d[0];
-                    int targetC = j + d[1];
-                    if (insideRange(targetR, targetC) && !isBlank(i, j) && !isBlank(targetR, targetC)) {
-                        copy.swapFromTo(i, j, targetR, targetC);
+                for (int d : directions()) {
+                    int target = source + d;
+                    if (insideRange(source, d) && !isBlank(source) && !isBlank(target)) {
+                        copy.swapFromTo(source, target);
                         return copy;
                     }
                 }
+                source++;
             }
         }
 
         return copy;
     }
 
-    private void swapFromTo(int row, int col, int targetRow, int targetCol) {
+    private int[] directions() {
+        return new int[]{
+                1,
+                dimension,
+                -dimension,
+                -1,
+        };
+    }
+
+    private void swapFromTo(int source, int target) {
         // here we also update outOfPlace counter
         int numOutOfPlaceBeforeSwap = 0;
         int manhattanSumBefore = 0;
-        if (isBlockMisplaced(targetRow, targetCol)) {
+        if (isBlockMisplaced(target)) {
             numOutOfPlaceBeforeSwap++;
-            manhattanSumBefore += computeManhattanDistance(targetRow, targetCol);
+            manhattanSumBefore += computeManhattanDistance(target);
         }
-        if (isBlockMisplaced(row, col)) {
+        if (isBlockMisplaced(source)) {
             numOutOfPlaceBeforeSwap++;
-            manhattanSumBefore += computeManhattanDistance(row, col);
+            manhattanSumBefore += computeManhattanDistance(source);
         }
 
-        int old = blocks[targetRow][targetCol];
+        int old = blocks[target];
 
-        blocks[targetRow][targetCol] = blocks[row][col];
-        blocks[row][col] = old;
+        blocks[target] = blocks[source];
+        blocks[source] = old;
 
         int numOutOfPlaceAfterSwap = 0;
         int manhattanSumAfter = 0;
-        if (isBlockMisplaced(targetRow, targetCol)) {
+        if (isBlockMisplaced(target)) {
             numOutOfPlaceAfterSwap++;
-            manhattanSumAfter += computeManhattanDistance(targetRow, targetCol);
+            manhattanSumAfter += computeManhattanDistance(target);
         }
-        if (isBlockMisplaced(row, col)) {
+        if (isBlockMisplaced(source)) {
             numOutOfPlaceAfterSwap++;
-            manhattanSumAfter += computeManhattanDistance(row, col);
+            manhattanSumAfter += computeManhattanDistance(source);
         }
         int outOfPlaceDelta = numOutOfPlaceAfterSwap - numOutOfPlaceBeforeSwap;
         outOfPlace += outOfPlaceDelta;
@@ -127,21 +148,25 @@ public class Board {
         manhattan += manhattanDelta;
     }
 
-    private boolean isBlockMisplaced(int row, int col) {
-        int block = blocks[row][col];
+    private boolean isBlockMisplaced(int offset) {
+        int block = blocks[offset];
         if (block == 0) {
             return false;
         } else {
-            return block != 1 + row * dimension() + col;
+            return block != 1 + offset;
         }
     }
 
-    private boolean isBlank(int row, int col) {
-        return blocks[row][col] == 0;
+    private boolean isBlank(int offset) {
+        return blocks[offset] == 0;
     }
 
-    private boolean insideRange(int targetR, int targetC) {
-        return targetR >= 0 && targetR < dimension() && targetC >= 0 && targetC < dimension();
+    private boolean insideRange(int src, int d) {
+        int target = src + d;
+        if ((d == -1 || d == 1) && row(src) != row(target)) {
+            return false;
+        }
+        return target >= 0 && target < blocks.length;
     }
 
     // does this board equal y?
@@ -157,14 +182,16 @@ public class Board {
         }
 
         Board that = (Board) other;
-        if (this.dimension() != that.dimension()) {
+        if (this.dimension != that.dimension) {
             return false;
         }
-        for (int i = 0; i < dimension(); i++) {
-            for (int j = 0; j < dimension(); j++) {
-                if (this.blocks[i][j] != that.blocks[i][j]) {
+        int offset = 0;
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
+                if (this.blocks[offset] != that.blocks[offset]) {
                     return false;
                 }
+                offset++;
             }
         }
         return true;
@@ -175,10 +202,11 @@ public class Board {
         StringBuilder sb = new StringBuilder();
         sb.append(dimension());
         sb.append("\n");
-
+        int offset = 0;
         for (int i = 0; i < dimension(); i++) {
             for (int j = 0; j < dimension(); j++) {
-                sb.append(String.format("%2d ", blocks[i][j]));
+                sb.append(String.format("%2d ", blocks[offset]));
+                offset++;
             }
             sb.append("\n");
         }
@@ -188,26 +216,23 @@ public class Board {
     // all neighboring boards
     public Iterable<Board> neighbors() {
         Stack<Board> neighbors = new Stack<Board>();
-        for (int[] d : directions) {
-            addNeighborIfPossible(neighbors, d[0], d[1]);
+        for (int d : directions()) {
+            addNeighborIfPossible(neighbors, d);
         }
         return neighbors;
     }
 
-    private void addNeighborIfPossible(Stack<Board> neighbors, int dr, int dc) {
-        int blankTargetR = blankR + dr;
-        int blankTargetC = blankC + dc;
-
-        if (insideRange(blankTargetR, blankTargetC)) {
-            Board copy = new Board(blocks);
-            copy.swapBlankTo(blankTargetR, blankTargetC);
+    private void addNeighborIfPossible(Stack<Board> neighbors, int d) {
+        int blankTarget = blank + d;
+        if (insideRange(blank, d)) {
+            Board copy = new Board(blocks, dimension, manhattan, outOfPlace, blank);
+            copy.swapBlankTo(blankTarget);
             neighbors.push(copy);
         }
     }
 
-    private void swapBlankTo(int blankTargetR, int blankTargetC) {
-        swapFromTo(blankR, blankC, blankTargetR, blankTargetC);
-        blankR = blankTargetR;
-        blankC = blankTargetC;
+    private void swapBlankTo(int blankTarget) {
+        swapFromTo(blank, blankTarget);
+        blank = blankTarget;
     }
 }
