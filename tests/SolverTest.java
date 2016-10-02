@@ -37,20 +37,26 @@ public class SolverTest {
 
     @Test
     public void solutionTest() {
-        Solver solver = new Solver(new Board(new int[][]{
+        Board initial = new Board(new int[][]{
                 {0, 1, 3},
                 {4, 2, 5},
                 {7, 8, 6}
-        }));
+        });
+        Solver solver = new Solver(initial);
         assertTrue("Be solvable", solver.isSolvable());
         assertEquals("Minimum number of moves = 4", 4, solver.moves());
         int boards = 0;
         Board last = null;
+        Board first = null;
         for (Board b : solver.solution()) {
             boards++;
+            if (first == null) {
+                first = b;
+            }
             last = b;
         }
-        assertEquals(4, boards);
+        assertEquals(5, boards);
+        assertEquals(first, initial);
         assertTrue(last.isGoal());
     }
 
@@ -65,6 +71,11 @@ public class SolverTest {
         Board initial = new Board(blocks);
         Solver solver = new Solver(initial);
         assertFalse("Be unsolvable", solver.isSolvable());
+        int boards = 0;
+        for (Board b : solver.solution()) {
+            boards++;
+        }
+        assertEquals(0, boards);
     }
 
     @Test

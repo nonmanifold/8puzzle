@@ -66,15 +66,17 @@ public class Solver {
 
     // sequence of boards in a shortest solution; null if unsolvable
     public Iterable<Board> solution() {
-        Board[] boards = new Board[moves()];
+        Board[] boards = new Board[moves() + 1];
         Node curr = goalNode;
-        int i = moves - 1;
-        while (curr.previous != null) {
-            boards[i] = curr.board;
-            i--;
-            curr = curr.previous;
-        }
+        if (curr != null) {
+            int i = moves;
+            do {
+                boards[i] = curr.board;
+                i--;
+                curr = curr.previous;
+            } while (curr != null);
 
+        }
         return Arrays.asList(boards);
     }
 

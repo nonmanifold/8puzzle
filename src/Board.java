@@ -129,7 +129,7 @@ public class Board {
         int block = blocks[row][col];
         if (block == 0) {
             return false;
-        }else {
+        } else {
             return block != 1 + row * dimension + col;
         }
     }
