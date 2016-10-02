@@ -66,18 +66,20 @@ public class Solver {
 
     // sequence of boards in a shortest solution; null if unsolvable
     public Iterable<Board> solution() {
-        Board[] boards = new Board[moves() + 1];
         Node curr = goalNode;
+
         if (curr != null) {
+            Board[] boards = new Board[moves() + 1];
             int i = moves;
             do {
                 boards[i] = curr.board;
                 i--;
                 curr = curr.previous;
             } while (curr != null);
-
+            return Arrays.asList(boards);
+        } else {
+            return null;
         }
-        return Arrays.asList(boards);
     }
 
     // solve a slider puzzle

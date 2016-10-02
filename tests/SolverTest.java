@@ -71,11 +71,8 @@ public class SolverTest {
         Board initial = new Board(blocks);
         Solver solver = new Solver(initial);
         assertFalse("Be unsolvable", solver.isSolvable());
-        int boards = 0;
-        for (Board b : solver.solution()) {
-            boards++;
-        }
-        assertEquals(0, boards);
+
+        assertEquals(null, solver.solution());
     }
 
     @Test

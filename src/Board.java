@@ -1,7 +1,6 @@
 import edu.princeton.cs.algs4.Stack;
 
 public class Board {
-    private final int dimension;
     private int outOfPlace;
     private int manhattan;
     private int blankR;
@@ -20,12 +19,11 @@ public class Board {
         if (blocks == null) {
             throw new NullPointerException();
         }
-        dimension = blocks.length;
-        this.blocks = new int[dimension][];
+        this.blocks = new int[blocks.length][];
         // copy blocks to internal state
-        for (int i = 0; i < dimension; i++) {
-            this.blocks[i] = new int[dimension];
-            for (int j = 0; j < dimension; j++) {
+        for (int i = 0; i < dimension(); i++) {
+            this.blocks[i] = new int[dimension()];
+            for (int j = 0; j < dimension(); j++) {
                 this.blocks[i][j] = blocks[i][j];
                 if (isBlockMisplaced(i, j)) {
                     outOfPlace++;
@@ -45,15 +43,15 @@ public class Board {
             return 0;
         } else {
             int block = blocks[row][col] - 1;
-            int deltaRow = row - block / dimension;
-            int deltaCol = col - (block - dimension * (block / dimension));
+            int deltaRow = row - block / dimension();
+            int deltaCol = col - (block - dimension() * (block / dimension()));
             return Math.abs(deltaRow) + Math.abs(deltaCol);
         }
     }
 
     // board dimension n
     public int dimension() {
-        return dimension;
+        return blocks.length;
     }
 
     // number of blocks out of place
@@ -74,8 +72,8 @@ public class Board {
     // a board that is obtained by exchanging any pair of blocks
     public Board twin() {
         Board copy = new Board(blocks);
-        for (int i = 0; i < dimension; i++) {
-            for (int j = 0; j < dimension; j++) {
+        for (int i = 0; i < dimension(); i++) {
+            for (int j = 0; j < dimension(); j++) {
                 for (int[] d : directions) {
                     int targetR = i + d[0];
                     int targetC = j + d[1];
@@ -130,7 +128,7 @@ public class Board {
         if (block == 0) {
             return false;
         } else {
-            return block != 1 + row * dimension + col;
+            return block != 1 + row * dimension() + col;
         }
     }
 
@@ -139,7 +137,7 @@ public class Board {
     }
 
     private boolean insideRange(int targetR, int targetC) {
-        return targetR >= 0 && targetR < dimension && targetC >= 0 && targetC < dimension;
+        return targetR >= 0 && targetR < dimension() && targetC >= 0 && targetC < dimension();
     }
 
     // does this board equal y?
@@ -158,8 +156,8 @@ public class Board {
         if (this.dimension() != that.dimension()) {
             return false;
         }
-        for (int i = 0; i < dimension; i++) {
-            for (int j = 0; j < dimension; j++) {
+        for (int i = 0; i < dimension(); i++) {
+            for (int j = 0; j < dimension(); j++) {
                 if (this.blocks[i][j] != that.blocks[i][j]) {
                     return false;
                 }
@@ -174,8 +172,8 @@ public class Board {
         sb.append(dimension());
         sb.append("\n");
 
-        for (int i = 0; i < dimension; i++) {
-            for (int j = 0; j < dimension; j++) {
+        for (int i = 0; i < dimension(); i++) {
+            for (int j = 0; j < dimension(); j++) {
                 sb.append(String.format("%2d ", blocks[i][j]));
             }
             sb.append("\n");
