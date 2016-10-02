@@ -1,22 +1,65 @@
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.StdOut;
 
 public class Solver {
+    private int moves = -1;
+
     // find a solution to the initial board (using the A* algorithm)
     public Solver(Board initial) {
         if (initial == null) {
             throw new NullPointerException();
         }
+        Node goalNode = compute(initial);
+
+        if (goalNode != null) {
+            moves = goalNode.moves;
+        }
+    }
+
+    private Node compute(Board initial) {
+        MinPQ<Node> queueMain = new MinPQ<Node>();
+        queueMain.insert(new Node(initial, -1, null));
+        MinPQ<Node> queueTwin = new MinPQ<Node>();
+        queueTwin.insert(new Node(initial.twin(), -1, null));
+
+        boolean isMain = false;
+        while (true) {
+            isMain = !isMain;
+            if (isMain) {
+                Node current = queueMain.delMin();
+                if (current.board.isGoal()) {
+                    return current;
+                }
+                for (Board neighbor : current.board.neighbors()) {
+                    if (!neighbor.equals(current.board)) {
+                        queueMain.insert(new Node(neighbor, current.moves, current.board));
+                    }
+                }
+            } else {
+                Node current = queueTwin.delMin();
+                if (current.board.isGoal()) {
+                    return null;
+                } else if (current.previous == null) {
+                    return null;
+                }
+                for (Board neighbor : current.board.neighbors()) {
+                    if (!neighbor.equals(current.board)) {
+                        queueTwin.insert(new Node(neighbor, current.moves, current.board));
+                    }
+                }
+            }
+        }
     }
 
     // is the initial board solvable?
     public boolean isSolvable() {
-        return false;
+        return moves != -1;
     }
 
     // min number of moves to solve initial board; -1 if unsolvable
     public int moves() {
-        return 0;
+        return moves;
     }
 
     // sequence of boards in a shortest solution; null if unsolvable
@@ -45,6 +88,25 @@ public class Solver {
             StdOut.println("Minimum number of moves = " + solver.moves());
             for (Board board : solver.solution())
                 StdOut.println(board);
+        }
+    }
+
+    private class Node implements Comparable<Node> {
+        private final Board board;
+        private final int moves;
+        private final int priority;
+        private final Board previous;
+
+        Node(Board board, int moves, Board previous) {
+            this.previous = previous;
+            this.board = board;
+            this.moves = moves + 1;
+            this.priority = this.moves + board.manhattan();
+        }
+
+        @Override
+        public int compareTo(Node o) {
+            return priority - o.priority;
         }
     }
 }
