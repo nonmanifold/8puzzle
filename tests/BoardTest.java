@@ -133,4 +133,20 @@ public class BoardTest {
         });
         assertFalse(nonGoalBoard.isGoal());
     }
+
+
+    @Test
+    public void twinTest() {
+        Board board = new Board(new int[][]{
+                {1, 2},
+                {3, 0}
+        });
+
+        Board boardTwin = new Board(new int[][]{
+                {3, 2},
+                {1, 0}
+        });
+
+        assertEquals(boardTwin, board.twin());
+    }
 }

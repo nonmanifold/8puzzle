@@ -6,6 +6,12 @@ public class Board {
     private int blankR;
     private int blankC;
     private int[][] blocks;
+    private static int[][] directions = new int[][]{
+            {1, 0},
+            {-1, 0},
+            {0, 1},
+            {0, -1}
+    };
 
     // construct a board from an n-by-n array of blocks
     // (where blocks[i][j] = block in row i, column j)
@@ -20,7 +26,7 @@ public class Board {
             this.blocks[i] = new int[dimension];
             for (int j = 0; j < dimension; j++) {
                 this.blocks[i][j] = blocks[i][j];
-                if (blocks[i][j] != 1 + i * dimension + j && !(i == dimension - 1 && j == dimension - 1)) {
+                if (isBlockMisplaced(i, j)) {
                     outOfPlace++;
                 }
                 if (blocks[i][j] == 0) {
@@ -53,7 +59,59 @@ public class Board {
 
     // a board that is obtained by exchanging any pair of blocks
     public Board twin() {
-        return null;
+        Board copy = new Board(blocks);
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
+                for (int[] d : directions) {
+                    int targetR = i + d[0];
+                    int targetC = j + d[1];
+                    if (rangeCheck(targetR, targetC) && !isBlank(i, j) && !isBlank(targetR, targetC)) {
+                        copy.swapFromTo(i, j, targetR, targetC);
+                        return copy;
+                    }
+                }
+            }
+        }
+
+        return copy;
+    }
+
+    private void swapFromTo(int row, int col, int targetRow, int targetCol) {
+        // here we also update outOfPlace counter
+        int numOutOfPlaceBeforeSwap = 0;
+        if (isBlockMisplaced(targetRow, targetCol)) {
+            numOutOfPlaceBeforeSwap++;
+        }
+        if (isBlockMisplaced(row, col)) {
+            numOutOfPlaceBeforeSwap++;
+        }
+
+        int old = blocks[targetRow][targetCol];
+
+        blocks[targetRow][targetCol] = blocks[row][col];
+        blocks[row][col] = old;
+
+        int numOutOfPlaceAfterSwap = 0;
+        if (isBlockMisplaced(targetRow, targetCol)) {
+            numOutOfPlaceAfterSwap++;
+        }
+        if (isBlockMisplaced(row, col)) {
+            numOutOfPlaceAfterSwap++;
+        }
+        int delta = numOutOfPlaceAfterSwap - numOutOfPlaceBeforeSwap;
+        outOfPlace += delta;
+    }
+
+    private boolean isBlockMisplaced(int row, int col) {
+        return blocks[row][col] != 1 + row * dimension + col && !(row == dimension - 1 && col == dimension - 1);
+    }
+
+    private boolean isBlank(int row, int col) {
+        return blocks[row][col] == 0;
+    }
+
+    private boolean rangeCheck(int targetR, int targetC) {
+        return targetR >= 0 && targetR < dimension && targetC >= 0 && targetC < dimension;
     }
 
     // does this board equal y?
@@ -100,10 +158,9 @@ public class Board {
     // all neighboring boards
     public Iterable<Board> neighbors() {
         Stack<Board> neighbors = new Stack<Board>();
-        addNeighborIfPossible(neighbors, 1, 0);
-        addNeighborIfPossible(neighbors, -1, 0);
-        addNeighborIfPossible(neighbors, 0, 1);
-        addNeighborIfPossible(neighbors, 0, -1);
+        for (int[] d : directions) {
+            addNeighborIfPossible(neighbors, d[0], d[1]);
+        }
         return neighbors;
     }
 
@@ -111,7 +168,7 @@ public class Board {
         int blankTargetR = blankR + dr;
         int blankTargetC = blankC + dc;
 
-        if (blankTargetR >= 0 && blankTargetR < dimension && blankTargetC >= 0 && blankTargetC < dimension) {
+        if (rangeCheck(blankTargetR, blankTargetC)) {
             Board copy = new Board(blocks);
             copy.swapBlankTo(blankTargetR, blankTargetC);
             neighbors.push(copy);
@@ -119,8 +176,7 @@ public class Board {
     }
 
     private void swapBlankTo(int blankTargetR, int blankTargetC) {
-        blocks[blankR][blankC] = blocks[blankTargetR][blankTargetC];
-        blocks[blankTargetR][blankTargetC] = 0;
+        swapFromTo(blankR, blankC, blankTargetR, blankTargetC);
         blankR = blankTargetR;
         blankC = blankTargetC;
     }
