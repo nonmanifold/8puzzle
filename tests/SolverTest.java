@@ -51,6 +51,6 @@ public class SolverTest {
     public void ThrowNPEonNull() {
         // throw a java.lang.NullPointerException if passed a null argument
         thrown.expect(NullPointerException.class);
-        new Board(null);
+        new Solver(null);
     }
 }

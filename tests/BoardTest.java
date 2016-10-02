@@ -1,8 +1,20 @@
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.*;
 
 public class BoardTest {
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
+    @Test
+    public void ThrowNPEonNull() {
+        // throw a java.lang.NullPointerException if passed a null argument
+        thrown.expect(NullPointerException.class);
+        new Board(null);
+    }
+
     @Test
     public void hamming() {
         int[][] blocks = new int[][]{
@@ -52,5 +64,24 @@ public class BoardTest {
                 "15 11 10 14\n" +
                 " 3  7  5  6\n" +
                 " 4  8  2  1\n", board4.toString());
+    }
+
+    @Test
+    public void equalsTest() {
+        Board boardA = new Board(new int[][]{
+                {0}
+        });
+
+        Board boardA1 = new Board(new int[][]{
+                {0}
+        });
+        Board boardB = new Board(new int[][]{
+                {1, 2},
+                {3, 0}
+        });
+        assertTrue(boardA.equals(boardA));
+        assertTrue(boardA.equals(boardA1));
+        assertTrue(boardA1.equals(boardA));
+        assertFalse(boardA.equals(boardB));
     }
 }
