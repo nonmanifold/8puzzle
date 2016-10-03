@@ -26,14 +26,17 @@ public class Solver {
 
         MinPQ<Node> queueTwin = new MinPQ<>();
         queueTwin.insert(new Node(initial.twin(), -1, null));
-
+        int maxMoves = (int) Math.pow(2, initial.dimension() * initial.dimension());
         boolean isMain = true;
-        while (true) {
+        while (!queueMain.isEmpty() && !queueTwin.isEmpty()) {
             isMain = !isMain;
             if (isMain) {
                 Node current = queueMain.delMin();
                 if (current.board.isGoal()) {
                     return current;
+                }
+                if (current.moves > maxMoves) {
+                    continue;
                 }
                 for (Board neighbor : current.board.neighbors()) {
                     if (!neighbor.equals(current.board)) {
@@ -45,6 +48,9 @@ public class Solver {
                 if (currentTwin.board.isGoal()) {
                     return null;
                 }
+                if (currentTwin.moves > maxMoves) {
+                    continue;
+                }
                 for (Board neighbor : currentTwin.board.neighbors()) {
                     if (!neighbor.equals(currentTwin.board)) {
                         queueTwin.insert(new Node(neighbor, currentTwin.moves, currentTwin));
@@ -52,6 +58,7 @@ public class Solver {
                 }
             }
         }
+        return null;
     }
 
     // is the initial board solvable?
