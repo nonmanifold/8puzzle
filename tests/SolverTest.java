@@ -33,7 +33,30 @@ public class SolverTest {
         assertTrue("Be solvable", solver.isSolvable());
         assertEquals("Minimum number of moves = 4", 4, solver.moves());
     }
-
+    @Test
+    public void Solvable3x3_26() {
+        int[][] blocks = new int[][]{
+                {4, 8, 7},
+                {5, 3, 1},
+                {0, 6, 1}
+        };
+        Board initial = new Board(blocks);
+        Solver solver = new Solver(initial);
+        assertTrue("Be solvable", solver.isSolvable());
+        assertEquals("Minimum number of moves = 26", 26, solver.moves());
+    }
+    @Test
+    public void Solvable3x3_27() {
+        int[][] blocks = new int[][]{
+                {1, 6, 4},
+                {0, 3, 5},
+                {8, 2, 7}
+        };
+        Board initial = new Board(blocks);
+        Solver solver = new Solver(initial);
+        assertTrue("Be solvable", solver.isSolvable());
+        assertEquals("Minimum number of moves = 27", 27, solver.moves());
+    }
 
     @Test
     public void solutionTest() {
@@ -67,6 +90,20 @@ public class SolverTest {
                 {2, 5, 4},
                 {1, 3, 0}
 
+        };
+        Board initial = new Board(blocks);
+        Solver solver = new Solver(initial);
+        assertFalse("Be unsolvable", solver.isSolvable());
+
+        assertEquals(null, solver.solution());
+    }
+
+    @Test
+    public void UnSolvable3x3Hard() {
+        int[][] blocks = new int[][]{
+                {1, 2, 3},
+                {4, 6, 5},
+                {7, 8, 0}
         };
         Board initial = new Board(blocks);
         Solver solver = new Solver(initial);
