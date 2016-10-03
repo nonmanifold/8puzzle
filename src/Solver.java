@@ -5,7 +5,7 @@ import edu.princeton.cs.algs4.StdOut;
 import java.util.Arrays;
 
 public class Solver {
-    private final Node goalNode;
+    private Node goalNode;
     private int moves = -1;
 
     // find a solution to the initial board (using the A* algorithm)
@@ -16,47 +16,35 @@ public class Solver {
         goalNode = compute(initial);
 
         if (goalNode != null) {
-            moves = goalNode.moves;
+            Node curr = goalNode;
+
+            while (curr.previous != null) {
+                curr = curr.previous;
+            }
+            if (curr.board == initial) {
+                moves = goalNode.moves;
+            } else {
+                goalNode = null; // it was twin
+            }
         }
     }
 
     private Node compute(Board initial) {
-        MinPQ<Node> queueMain = new MinPQ<>();
-        queueMain.insert(new Node(initial, -1, null));
-
-        MinPQ<Node> queueTwin = new MinPQ<>();
-        queueTwin.insert(new Node(initial.twin(), -1, null));
-        int maxMoves = (int) Math.pow(2, initial.dimension() * initial.dimension());
-        boolean isMain = true;
-        while (!queueMain.isEmpty() && !queueTwin.isEmpty()) {
-            isMain = !isMain;
-            if (isMain) {
-                Node current = queueMain.delMin();
-                if (current.board.isGoal()) {
-                    return current;
-                }
-                if (current.moves > maxMoves) {
-                    continue;
-                }
-                for (Board neighbor : current.board.neighbors()) {
-                    if (!neighbor.equals(current.board)) {
-                        queueMain.insert(new Node(neighbor, current.moves, current));
-                    }
-                }
-            } else {
-                Node currentTwin = queueTwin.delMin();
-                if (currentTwin.board.isGoal()) {
-                    return null;
-                }
-                if (currentTwin.moves > maxMoves) {
-                    continue;
-                }
-                for (Board neighbor : currentTwin.board.neighbors()) {
-                    if (!neighbor.equals(currentTwin.board)) {
-                        queueTwin.insert(new Node(neighbor, currentTwin.moves, currentTwin));
-                    }
+        MinPQ<Node> queue = new MinPQ<>();
+        queue.insert(new Node(initial, -1, null));
+        Board twin = initial.twin();
+        queue.insert(new Node(twin, -1, null));
+        while (!queue.isEmpty() && !queue.isEmpty()) {
+            Node current = queue.delMin();
+            if (current.board.isGoal()) {
+                return current;
+            }
+            for (Board neighbor : current.board.neighbors()) {
+                if (!neighbor.equals(current.board)) {
+                    queue.insert(new Node(neighbor, current.moves, current));
                 }
             }
+
         }
         return null;
     }

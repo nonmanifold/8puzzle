@@ -44,16 +44,12 @@ public class Board {
         this.blank = blank;
     }
 
-    private int to1d(int row, int col) {
-        return row * dimension + col;
-    }
-
     private int row(int offset) {
         return offset / dimension;
     }
 
     private int col(int offset) {
-        return offset - row(offset) * dimension;
+        return offset % dimension;
     }
 
     private int computeManhattanDistance(int offset) {
@@ -93,7 +89,7 @@ public class Board {
                 for (int d : directions()) {
                     int target = source + d;
                     if (insideRange(source, d) && !isBlank(source) && !isBlank(target)) {
-                        copy.swapFromTo(source, target);
+                        copy.swapBlockFromTo(source, target);
                         return copy;
                     }
                 }
@@ -113,7 +109,7 @@ public class Board {
         };
     }
 
-    private void swapFromTo(int source, int target) {
+    private void swapBlockFromTo(int source, int target) {
         // here we also update outOfPlace counter
         int numOutOfPlaceBeforeSwap = 0;
         int manhattanSumBefore = 0;
@@ -148,13 +144,37 @@ public class Board {
         manhattan += manhattanDelta;
     }
 
+    private void swapBlankFromTo(int blankSourcePos, int blankTargetPos) {
+        // here we also update outOfPlace counter
+        int numOutOfPlaceBeforeSwap = 0;
+        int manhattanSumBefore = 0;
+        if (isBlockMisplaced(blankTargetPos)) {
+            numOutOfPlaceBeforeSwap++;
+            manhattanSumBefore += computeManhattanDistance(blankTargetPos);
+        }
+
+        int old = blocks[blankTargetPos];
+
+        blocks[blankTargetPos] = blocks[blankSourcePos];
+        blocks[blankSourcePos] = old;
+
+        int numOutOfPlaceAfterSwap = 0;
+        int manhattanSumAfter = 0;
+
+        if (isBlockMisplaced(blankSourcePos)) {
+            numOutOfPlaceAfterSwap++;
+            manhattanSumAfter += computeManhattanDistance(blankSourcePos);
+        }
+        int outOfPlaceDelta = numOutOfPlaceAfterSwap - numOutOfPlaceBeforeSwap;
+        outOfPlace += outOfPlaceDelta;
+
+        int manhattanDelta = manhattanSumAfter - manhattanSumBefore;
+        manhattan += manhattanDelta;
+    }
+
     private boolean isBlockMisplaced(int offset) {
         int block = blocks[offset];
-        if (block == 0) {
-            return false;
-        } else {
-            return block != 1 + offset;
-        }
+        return block != 0 && block != 1 + offset;
     }
 
     private boolean isBlank(int offset) {
@@ -233,7 +253,7 @@ public class Board {
     }
 
     private void swapBlankTo(int blankTarget) {
-        swapFromTo(blank, blankTarget);
+        swapBlankFromTo(blank, blankTarget);
         blank = blankTarget;
     }
 }
