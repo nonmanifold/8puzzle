@@ -203,19 +203,8 @@ public class Board {
         }
 
         Board that = (Board) other;
-        if (this.dimension != that.dimension) {
-            return false;
-        }
-        int offset = 0;
-        for (int i = 0; i < dimension; i++) {
-            for (int j = 0; j < dimension; j++) {
-                if (this.blocks[offset] != that.blocks[offset]) {
-                    return false;
-                }
-                offset++;
-            }
-        }
-        return true;
+
+        return Arrays.equals(this.blocks, that.blocks);
     }
 
     // string representation of this board (in the output format specified below)
