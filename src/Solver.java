@@ -39,12 +39,14 @@ public class Solver {
             if (current.board.isGoal()) {
                 return current;
             }
-            for (Board neighbor : current.board.neighbors()) {
-                if (!neighbor.equals(current.board)) {
+            Iterable<Board> neighbors = current.board.neighbors();
+            for (Board neighbor : neighbors) {
+                if (current.previous == null) {
+                    queue.insert(new Node(neighbor, current.moves, current));
+                } else if (!neighbor.equals(current.previous.board)) {
                     queue.insert(new Node(neighbor, current.moves, current));
                 }
             }
-
         }
         return null;
     }
